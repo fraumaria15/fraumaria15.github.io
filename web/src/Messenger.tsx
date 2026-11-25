@@ -4,6 +4,8 @@ import { errorText, formatTime, timestamp } from './format'
 import type { ChatItem, Member, Message, Profile } from './types'
 import { ChatView } from './ChatView'
 import { InviteDialog, NewDmDialog, NewGroupDialog } from './Dialogs'
+import { PushBanner } from './PushBanner'
+import { disablePushForThisDevice } from './push'
 
 type Props = { userId: string }
 type Dialog = 'dm' | 'group' | 'invite' | null
@@ -151,6 +153,30 @@ export function Messenger({ userId }: Props) {
     supabase.rpc('mark_read', { p_chat: chatId })
   }, [])
 
+  // Open the chat from a notification: ?chat=<id> on launch, or a message from the service worker
+  useEffect(() => {
+    const fromUrl = new URLSearchParams(window.location.search).get('chat')
+    if (fromUrl) {
+      window.history.replaceState(null, '', window.location.pathname)
+      openChat(fromUrl)
+    }
+    if (!('serviceWorker' in navigator)) return
+    const onSwMessage = (e: MessageEvent) => {
+      if (e.data?.type === 'open-chat' && typeof e.data.chatId === 'string') openChat(e.data.chatId)
+    }
+    navigator.serviceWorker.addEventListener('message', onSwMessage)
+    return () => navigator.serviceWorker.removeEventListener('message', onSwMessage)
+  }, [openChat])
+
+  async function logout() {
+    try {
+      await disablePushForThisDevice()
+    } catch {
+      // still log out even if push cleanup fails
+    }
+    await supabase.auth.signOut()
+  }
+
   function closeChat() {
     activeRef.current = null
     setActiveId(null)
@@ -220,7 +246,7 @@ export function Messenger({ userId }: Props) {
             <div className="chat-title">{me?.display_name ?? '…'}</div>
             {me && <div className="muted small">@{me.username}</div>}
           </div>
-          <button className="link" onClick={() => supabase.auth.signOut()}>
+          <button className="link" onClick={logout}>
             Выйти
           </button>
         </header>
@@ -230,6 +256,8 @@ export function Messenger({ userId }: Props) {
           <button onClick={() => setDialog('group')}>Группа</button>
           <button onClick={() => setDialog('invite')}>Пригласить</button>
         </div>
+
+        <PushBanner />
 
         {error && (
           <div className="error dismissible" onClick={() => setError(null)} title="Скрыть">
