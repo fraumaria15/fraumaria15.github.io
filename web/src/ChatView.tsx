@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { formatTime } from './format'
+import { Footer } from './Footer'
 import type { Message, Profile } from './types'
 
 type Props = {
@@ -12,9 +13,21 @@ type Props = {
   userId: string
   onSend: (body: string) => Promise<boolean>
   onBack: () => void
+  onContactDeveloper?: () => void
 }
 
-export function ChatView({ title, subtitle, isGroup, messages, loading, profiles, userId, onSend, onBack }: Props) {
+export function ChatView({
+  title,
+  subtitle,
+  isGroup,
+  messages,
+  loading,
+  profiles,
+  userId,
+  onSend,
+  onBack,
+  onContactDeveloper,
+}: Props) {
   const [text, setText] = useState('')
   const [sending, setSending] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -87,6 +100,7 @@ export function ChatView({ title, subtitle, isGroup, messages, loading, profiles
           Отправить
         </button>
       </form>
+      <Footer onContactDeveloper={onContactDeveloper} />
     </section>
   )
 }

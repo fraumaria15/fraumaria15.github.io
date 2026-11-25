@@ -6,6 +6,10 @@ import { ChatView } from './ChatView'
 import { InviteDialog, NewDmDialog, NewGroupDialog } from './Dialogs'
 import { PushBanner } from './PushBanner'
 import { disablePushForThisDevice } from './push'
+import { Footer } from './Footer'
+
+// Username (ник) of the developer account for the "Написать разработчику" link
+const DEVELOPER_USERNAME = ''
 
 type Props = { userId: string }
 type Dialog = 'dm' | 'group' | 'invite' | null
@@ -230,6 +234,11 @@ export function Messenger({ userId }: Props) {
   )
 
   const me = profiles.get(userId)
+
+  const developer = DEVELOPER_USERNAME
+    ? [...profiles.values()].find((p) => p.username === DEVELOPER_USERNAME)
+    : undefined
+  const contactDeveloper = developer && developer.id !== userId ? () => startDm(developer.id) : undefined
   const active = chats.find((c) => c.id === activeId) ?? null
 
   function preview(c: ChatItem): string {
@@ -285,6 +294,7 @@ export function Messenger({ userId }: Props) {
             </li>
           ))}
         </ul>
+        <Footer onContactDeveloper={contactDeveloper} />
       </aside>
 
       <main className="main">
@@ -304,6 +314,7 @@ export function Messenger({ userId }: Props) {
             userId={userId}
             onSend={send}
             onBack={closeChat}
+            onContactDeveloper={contactDeveloper}
           />
         ) : (
           <div className="center muted">Выбери чат</div>
