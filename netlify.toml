@@ -2,6 +2,8 @@
   base    = "web"
   command = "npm run build"
   publish = "dist"
+  # Always build (default skips builds when nothing changed inside base dir)
+  ignore  = "exit 1"
 
 [build.environment]
   NODE_VERSION = "22"
