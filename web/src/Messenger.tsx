@@ -4,7 +4,6 @@ import { errorText, formatTime, timestamp } from './format'
 import type { ChatItem, Member, Message, Profile } from './types'
 import { ChatView } from './ChatView'
 import { InviteDialog, NewDmDialog, NewGroupDialog } from './Dialogs'
-import { PushBanner } from './PushBanner'
 import { NotificationToggle } from './NotificationToggle'
 import { usePush } from './usePush'
 import { disablePushForThisDevice } from './push'
@@ -273,7 +272,11 @@ export function Messenger({ userId }: Props) {
           <button onClick={() => setDialog('invite')}>Пригласить</button>
         </div>
 
-        <PushBanner push={push} />
+        {push.error && (
+          <div className="error dismissible" onClick={() => push.setError(null)} title="Скрыть">
+            {push.error}
+          </div>
+        )}
 
         {error && (
           <div className="error dismissible" onClick={() => setError(null)} title="Скрыть">

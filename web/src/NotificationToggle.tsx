@@ -1,5 +1,10 @@
 import type { PushControl } from './usePush'
-import { PUSH_HINTS } from './PushBanner'
+
+const PUSH_HINTS = {
+  'needs-install':
+    'Чтобы получать уведомления на iPhone, добавь приложение на экран «Домой»: Поделиться → На экран «Домой», и открой его оттуда',
+  denied: 'Уведомления запрещены. Разреши их в настройках телефона или браузера для этого сайта',
+} as const
 
 function BellIcon({ off }: { off: boolean }) {
   return (

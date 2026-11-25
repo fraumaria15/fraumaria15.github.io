@@ -98,9 +98,6 @@ label.check input { width: auto; }
 .switch.blocked { opacity: 0.5; }
 .switch .knob { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgb(0 0 0 / 0.3); transition: transform 0.15s; }
 .switch.on .knob { transform: translateX(16px); }
-.banner { display: flex; align-items: center; gap: 8px; margin: 0 12px 10px; padding: 10px 12px; border-radius: 10px; background: var(--hover); font-size: 13px; }
-.banner > span { flex: 1; }
-.banner button.primary { padding: 6px 10px; font-size: 13px; }
 
 .chat-list { list-style: none; margin: 0; padding: 0 6px 8px; overflow-y: auto; flex: 1; }
 .chat-list button { width: 100%; display: flex; gap: 10px; align-items: center; border: none; text-align: left; padding: 10px; border-radius: 10px; background: none; }
