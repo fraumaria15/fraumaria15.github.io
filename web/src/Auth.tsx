@@ -54,7 +54,7 @@ export function Auth() {
 
   return (
     <div className="center">
-      <form className="card auth" onSubmit={submit}>
+      <form className="card auth" onSubmit={submit} method="post" action="#">
         <h1>chatme</h1>
         <div className="tabs">
           <button type="button" className={mode === 'login' ? 'active' : ''} onClick={() => setMode('login')}>
@@ -73,7 +73,14 @@ export function Auth() {
             </label>
             <label>
               Ник (латиница)
-              <input value={username} onChange={(e) => setUsername(e.target.value)} required placeholder="masha_k" />
+              <input
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                placeholder="masha_k"
+                autoComplete="nickname"
+                autoCapitalize="none"
+              />
             </label>
             <label>
               Имя для друзей
@@ -84,12 +91,22 @@ export function Auth() {
 
         <label>
           Почта
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
+          <input
+            type="email"
+            name="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="username"
+            inputMode="email"
+            autoCapitalize="none"
+          />
         </label>
         <label>
           Пароль
           <input
             type="password"
+            name="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
