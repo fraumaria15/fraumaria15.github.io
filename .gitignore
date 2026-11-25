@@ -7,3 +7,4 @@ dist/
 *.tsbuildinfo
 *.local.md
 *.local.sql
+!.env.production
