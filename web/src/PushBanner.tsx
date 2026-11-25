@@ -1,52 +1,32 @@
-import { useEffect, useState } from 'react'
-import { enablePush, getPushState, type PushState } from './push'
-import { errorText } from './format'
+import type { PushControl } from './usePush'
 
-export function PushBanner() {
-  const [state, setState] = useState<PushState>('loading')
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [hidden, setHidden] = useState(false)
+export const PUSH_HINTS = {
+  'needs-install':
+    'Чтобы получать уведомления на iPhone, добавь приложение на экран «Домой»: Поделиться → На экран «Домой», и открой его оттуда',
+  denied: 'Уведомления запрещены. Разреши их в настройках телефона или браузера для этого сайта',
+} as const
 
-  useEffect(() => {
-    getPushState()
-      .then(setState)
-      .catch(() => setState('off'))
-  }, [])
+/** One-time prompt for people who have not decided about notifications yet. */
+export function PushBanner({ push }: { push: PushControl }) {
+  const { state, busy, error, turnOn, bannerDismissed, dismissBanner } = push
 
-  async function enable() {
-    setBusy(true)
-    setError(null)
-    try {
-      setState(await enablePush())
-    } catch (err) {
-      setError(errorText(err))
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  if (hidden || state === 'loading' || state === 'on' || state === 'unsupported') return null
+  const visible = state === 'off' || state === 'needs-install' || state === 'denied'
+  if (bannerDismissed || !visible) return error ? <div className="error dismissible">{error}</div> : null
 
   return (
     <div className="banner">
       {state === 'off' && (
         <>
           <span>Включи уведомления, чтобы не пропускать сообщения</span>
-          <button className="primary" onClick={enable} disabled={busy}>
+          <button className="primary" onClick={turnOn} disabled={busy}>
             Включить
           </button>
         </>
       )}
-      {state === 'needs-install' && (
-        <span>
-          Чтобы получать уведомления на iPhone, добавь приложение на экран «Домой»: Поделиться → На экран «Домой», и
-          открой его оттуда
-        </span>
-      )}
-      {state === 'denied' && <span>Уведомления запрещены. Разреши их в настройках телефона или браузера для этого сайта</span>}
+      {state === 'needs-install' && <span>{PUSH_HINTS['needs-install']}</span>}
+      {state === 'denied' && <span>{PUSH_HINTS.denied}</span>}
       {error && <span className="error">{error}</span>}
-      <button className="icon" onClick={() => setHidden(true)} aria-label="Скрыть">
+      <button className="icon" onClick={dismissBanner} aria-label="Скрыть">
         ×
       </button>
     </div>

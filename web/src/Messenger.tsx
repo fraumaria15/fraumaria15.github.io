@@ -5,11 +5,13 @@ import type { ChatItem, Member, Message, Profile } from './types'
 import { ChatView } from './ChatView'
 import { InviteDialog, NewDmDialog, NewGroupDialog } from './Dialogs'
 import { PushBanner } from './PushBanner'
+import { NotificationToggle } from './NotificationToggle'
+import { usePush } from './usePush'
 import { disablePushForThisDevice } from './push'
 import { Footer } from './Footer'
 
 // Username (ник) of the developer account for the "Написать разработчику" link
-const DEVELOPER_USERNAME = ''
+const DEVELOPER_USERNAME = 'mashinka'
 
 type Props = { userId: string }
 type Dialog = 'dm' | 'group' | 'invite' | null
@@ -32,6 +34,8 @@ export function Messenger({ userId }: Props) {
   const [loadingMessages, setLoadingMessages] = useState(false)
   const [dialog, setDialog] = useState<Dialog>(null)
   const [error, setError] = useState<string | null>(null)
+
+  const push = usePush()
 
   const activeRef = useRef<string | null>(null)
   const profilesRef = useRef(profiles)
@@ -255,9 +259,12 @@ export function Messenger({ userId }: Props) {
             <div className="chat-title">{me?.display_name ?? '…'}</div>
             {me && <div className="muted small">@{me.username}</div>}
           </div>
-          <button className="link" onClick={logout}>
-            Выйти
-          </button>
+          <div className="header-actions">
+            <NotificationToggle push={push} />
+            <button className="link" onClick={logout}>
+              Выйти
+            </button>
+          </div>
         </header>
 
         <div className="actions">
@@ -266,7 +273,7 @@ export function Messenger({ userId }: Props) {
           <button onClick={() => setDialog('invite')}>Пригласить</button>
         </div>
 
-        <PushBanner />
+        <PushBanner push={push} />
 
         {error && (
           <div className="error dismissible" onClick={() => setError(null)} title="Скрыть">
